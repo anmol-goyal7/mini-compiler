@@ -52,5 +52,14 @@ class Lexer {
 
       return TokenType::IDENTIFIER;
     }
+    
+    std::string readNumber() {
+      size_t start = pos;
 
+      while(!isAtEnd()) && std::isdigit(peek())) {
+        advance();
+      }
+      
+      return source.substr(start, pos - start);
+    }
 };
