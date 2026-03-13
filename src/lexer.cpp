@@ -1,6 +1,6 @@
+#include <string>
 #include <cctype>
 #include "token.h"
-#include <string>
 
 class Lexer {
   private:
@@ -62,49 +62,50 @@ class Lexer {
       return source.substr(start, pos - start);
     }
 
-    TokenType nextToken() {
+    Token nextToken() {
       skipWhitespace();
       
       if (isAtEnd()) {
-        return TokenType::END_OF_FILE;
+        return {TokenType::END_OF_FILE, ""};
       }
 
       char c = peek();
       
       if (std::isalpha(c) || c == '_') {
         std::string text = readIdentifier();
-        return readIdentifierType(text);
+        TokenType type = readIdentifierType(text);
+        return {type, text};
       }
 
       if (std::isdigit(c)) {
-        readNumber();
-        return TokenType::NUMBER;
+        std::string number = readNumber();
+        return {TokenType::NUMBER, number};
       }
 
       switch (c) {
         case '(':
           advance();
-          return TokenType::LPAREN;
+          return {TokenType::LPAREN, "("};
 
         case ')':
           advance();
-          return TokenType::RPAREN;
+          return {TokenType::RPAREN, ")"};
 
         case '{':
           advance();
-          return TokenType::LBRACE;
+          return {TokenType::LBRACE, "{"};
 
         case '}':
           advance();
-          return TokenType::RBRACE;
+          return {TokenType::RBRACE, "}"};
 
         case ';':
           advance();
-          return TokenType::SEMICOLON;
+          return {TokenType::SEMICOLON, ";"};
       }
 
       advance();
-      return TokenType::END_OF_FILE;
+      return {TokenType::END_OF_FILE, ""};
     }
 };
 
