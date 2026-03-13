@@ -1,5 +1,7 @@
 #include <string>
 #include <cctype>
+#include "token.h"
+#include <string>
 
 class Lexer {
   private:
@@ -43,6 +45,12 @@ class Lexer {
 
       return source.substr(start, pos - start);
     }
+    
+    TokenType readIdentifierType(const std::string& text) {
+      if (text == "int") return TokenType::INT;
+      if (text == "return") return TokenType::RETURN;
 
+      return TokenType::IDENTIFIER;
+    }
 
 };
