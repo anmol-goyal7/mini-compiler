@@ -33,8 +33,14 @@ class Lexer {
         advance();
       }
     }
-
-
     
-    
+    std::string readIdentifier() {
+      size_t start = pos;
+
+      while(!isAtEnd() && (std::isalnum(peek()) || peek() == '_')) {
+        advance();
+      }
+
+      return source.substr(start, pos - start);
+    } 
 };
