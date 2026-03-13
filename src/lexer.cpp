@@ -1,4 +1,5 @@
 #include <string>
+#include <cctype>
 
 class Lexer {
   private:
@@ -7,4 +8,20 @@ class Lexer {
 
   public:
     Lexer(const std::string& src) : source(src), pos(0) {}
-}
+
+    bool isAtEnd() {
+      return pos >= source.length();
+    }
+
+    char peek() {
+      if (isAtEnd()) return '\0';
+      return source[pos];
+    }
+
+    void advance() {
+      if(!isAtEnd()) {
+        pos++;
+      }
+
+    }
+};
