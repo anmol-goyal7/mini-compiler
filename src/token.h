@@ -1,0 +1,14 @@
+enum class TokenType {
+  INT, 
+  RETURN,
+  INDENTIFIER,
+  NUMBER,
+
+  LPAREN,
+  RPAREN,
+  LBRACE,
+  RBRACE,
+  SEMICOLON,
+
+  END_OF_FILE
+};
