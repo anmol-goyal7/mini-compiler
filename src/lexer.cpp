@@ -64,8 +64,22 @@ class Lexer {
 
     TokenType nextToken() {
       skipWhitespace();
+      
+      if (isAtEnd()) {
+        return TokenType::END_OF_FILE;
+      }
 
       char c = peek();
+      
+      if (std::isalpha(c) || c == '_') {
+        std::string text = readIdentifier();
+        return readIdentifierType(text);
+      }
+
+      if (std::isdigit(c)) {
+        readNumber();
+        return TokenType::NUMBER;
+      }
 
       switch (c) {
         case '(':
@@ -88,6 +102,8 @@ class Lexer {
           advance();
           return TokenType::SEMICOLON;
       }
+
+      advance();
       return TokenType::END_OF_FILE;
     }
 };
