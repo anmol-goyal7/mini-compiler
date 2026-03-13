@@ -22,10 +22,19 @@ class Lexer {
       if(!isAtEnd()) {
         pos++;
       }
-    
+    }
     char peekNext() {
       if (pos + 1 >= source.length()) return '\0';
       return source[pos +1];
     }
+    
+    void skipWhitespace() {
+      while (!isAtEnd() && std::isspace(peek())) {
+        advance();
+      }
     }
+
+
+    
+    
 };
