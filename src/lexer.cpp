@@ -1,4 +1,3 @@
-#include <string>
 #include <cctype>
 #include "token.h"
 #include <string>
@@ -56,10 +55,41 @@ class Lexer {
     std::string readNumber() {
       size_t start = pos;
 
-      while(!isAtEnd()) && std::isdigit(peek())) {
+      while(!isAtEnd() && std::isdigit(peek())) {
         advance();
       }
       
       return source.substr(start, pos - start);
     }
+
+    TokenType nextToken() {
+      skipWhitespace();
+
+      char c = peek();
+
+      switch (c) {
+        case '(':
+          advance();
+          return TokenType::LPAREN;
+
+        case ')':
+          advance();
+          return TokenType::RPAREN;
+
+        case '{':
+          advance();
+          return TokenType::LBRACE;
+
+        case '}':
+          advance();
+          return TokenType::RBRACE;
+
+        case ';':
+          advance();
+          return TokenType::SEMICOLON;
+      }
+      return TokenType::END_OF_FILE;
+    }
 };
+
+
