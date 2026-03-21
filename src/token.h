@@ -4,7 +4,7 @@
 enum class TokenType {
   INT, 
   RETURN,
-  INDENTIFIER,
+  IDENTIFIER,
   NUMBER,
 
   LPAREN,

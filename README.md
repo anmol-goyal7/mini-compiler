@@ -57,16 +57,28 @@ main:
 
 ## Current Status
 
-Currently implemented:
+### Completed
 
-* project structure
-* token definitions
-* compiler skeleton
-* test input
+* **Project structure** — source, test, and build directories
+* **Token definitions** (`src/token.h`) — enum of token types and `Token` struct
+* **Lexer** (`src/lexer.cpp`) — fully implemented tokenizer with:
+  * whitespace skipping
+  * identifier and keyword recognition (`int`, `return`)
+  * number literal tokenization
+  * symbol recognition (`(`, `)`, `{`, `}`, `;`)
+  * `peek`, `peekNext`, and `advance` for character scanning
+* **Test input** (`tests/test.c`) — simple `return 42` program
 
-Next step:
+### In Progress
 
-* implement the **lexer** (tokenizer)
+* **Main driver** (`src/main.cpp`) — entry point to wire lexer to file input and print tokens
+* **Makefile** — build configuration
+
+### Not Yet Started
+
+* Parser (recursive descent)
+* AST node definitions
+* Code generator (x86-64 assembly output)
 
 ---
 
@@ -74,14 +86,14 @@ Next step:
 
 ```
 mini-compiler
-├── include
-│   └── token.h
 ├── src
-│   ├── lexer.cpp
-│   └── main.cpp
+│   ├── lexer.cpp      # Tokenizer implementation
+│   ├── token.h        # Token type definitions
+│   └── main.cpp       # Compiler entry point (WIP)
 ├── tests
-│   └── test.c
-└── Makefile
+│   └── test.c         # Test C program
+├── Makefile           # Build configuration (WIP)
+└── README.md
 ```
 
 ---
@@ -91,6 +103,8 @@ mini-compiler
 ```
 make
 ```
+
+*(Makefile not yet configured)*
 
 ---
 
@@ -124,4 +138,3 @@ Planned compiler capabilities:
 * control flow (`if`, `while`)
 * functions
 * full assembly generation
-
