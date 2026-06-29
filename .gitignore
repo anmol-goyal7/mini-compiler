@@ -1,0 +1,5 @@
+mycc
+tests/test_bin
+tests/test.s
+*.o
+
