@@ -1,6 +1,6 @@
 # Mini C Compiler
 
-A small C compiler written in C++, built from scratch to translate a subset of C into x86-64 assembly.
+A small compiler written in C++ from scratch: lexer, recursive descent parser, AST and x86-64 code generator. It currently handles the smallest C program — `int main() { return N; }` — end to end, and the pipeline is the base for growing the language.
 
 ## Pipeline
 
@@ -20,39 +20,46 @@ x86-64 Assembly
 Executable
 ```
 
-## Current Status
+## What it compiles today
 
-### Completed
+Exactly one shape of program: a single function with no parameters whose body is
+one `return` of a non-negative integer literal.
 
-- **Project structure** -- source, test, and build directories
-- **Token definitions** (`src/token.h`) -- enum of token types and `Token` struct
-- **Lexer** (`src/lexer.cpp`) -- fully implemented tokenizer with:
-  - whitespace skipping
-  - identifier and keyword recognition (`int`, `return`)
-  - number literal tokenization
-  - symbol recognition (`(`, `)`, `{`, `}`, `;`)
-  - `peek`, `peekNext`, and `advance` for character scanning
-- **Parser** (`src/parser.cpp`) -- recursive descent parser that produces an AST
-- **AST** (`src/ast.h`) -- node definitions for `Program`, `Function`, `ReturnStatement`, `NumberLiteral`
-- **Code Generator** (`src/codegen.cpp`) -- emits x86-64 assembly from the AST
-- **Main driver** (`src/main.cpp`) -- entry point that wires lexer, parser, and codegen together
-- **Makefile** -- build and test configuration
-- **Test input** (`tests/test.c`) -- simple `return 42` program
+```
+program   -> function EOF
+function  -> "int" IDENTIFIER "(" ")" "{" statement "}"
+statement -> "return" NUMBER ";"
+```
+
+`//` and `/* */` comments are skipped. Anything outside that grammar — operators,
+negative numbers, variables, a second function — is rejected with a
+`file:line:column` error rather than silently ignored:
+
+```
+$ ./mycc bad.c
+bad.c:1:21: unexpected character '-'
+```
+
+The output is GNU assembler x86-64 (AT&T syntax) for Linux; the function's return
+value goes in `%eax`, so `main` returning N makes the program exit with status N.
 
 ## Project Structure
 
 ```
 mini-compiler
 ├── src
-│   ├── token.h        # Token type definitions
-│   ├── ast.h          # AST node definitions
-│   ├── lexer.cpp      # Tokenizer implementation
-│   ├── parser.cpp     # Recursive descent parser
-│   ├── codegen.cpp    # x86-64 assembly code generator
-│   └── main.cpp       # Compiler entry point
+│   ├── token.h        # token types and the Token struct (with line/column)
+│   ├── error.h        # CompileError: "line:column: message"
+│   ├── lexer.h/.cpp   # source -> tokens; skips whitespace and comments
+│   ├── ast.h          # Program, Function, ReturnStatement, NumberLiteral
+│   ├── parser.h/.cpp  # recursive descent parser: tokens -> AST
+│   ├── codegen.h/.cpp # AST -> x86-64 assembly
+│   └── main.cpp       # driver: read file, lex, parse, generate
 ├── tests
-│   └── test.c         # Test C program
-├── Makefile           # Build and test configuration
+│   ├── valid/         # NAME_N.c must compile and exit with status N
+│   ├── invalid/       # must be rejected with a line:column error
+│   └── run.sh
+├── Makefile
 └── README.md
 ```
 
@@ -62,7 +69,8 @@ mini-compiler
 make
 ```
 
-To compile and run the test program:
+To run the test suite (compiles each test program, links it with `cc`, and checks
+the exit status or the error):
 
 ```
 make test
@@ -71,14 +79,14 @@ make test
 ## Run
 
 ```
-./mycc tests/test.c
+./mycc tests/valid/return_42.c
 ```
 
-This prints the generated x86-64 assembly to stdout. To produce an executable:
+This prints the generated assembly to stdout. To produce an executable:
 
 ```
-./mycc tests/test.c > out.s
-gcc out.s -o out
+./mycc tests/valid/return_42.c > out.s
+cc out.s -o out
 ./out; echo $?     # exits with 42
 ```
 
@@ -95,10 +103,12 @@ int main() {
 The compiler produces:
 
 ```asm
-.global main
+    .text
+    .globl main
 main:
-    mov $42, %rax
+    movl $42, %eax
     ret
+    .section .note.GNU-stack,"",@progbits
 ```
 
 ## Learning Objectives
@@ -114,7 +124,7 @@ This project explores:
 
 Planned compiler capabilities:
 
-- integer expressions
+- unary minus and integer expressions
 - operator precedence
 - variables
 - stack frame management
