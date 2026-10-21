@@ -1,19 +1,18 @@
-#include <string>
+#include "codegen.h"
+
 #include <sstream>
-#include "ast.h"
 
-class CodeGen {
-    public:
-        std::string generate(const Program& program) {
-            std::ostringstream out;
-            const Function& fn = program.function;
+std::string CodeGen::generate(const Program& program) const {
+  std::ostringstream out;
+  const Function& fn = program.function;
 
-            out << ".global " << fn.name << "\n";
-            out << fn.name << ":\n";
-            out << "    mov $" << fn.body.expression.value << ", %rax\n";
-            out << "    ret\n";
+  out << "    .text\n";
+  out << "    .globl " << fn.name << "\n";
+  out << fn.name << ":\n";
+  out << "    movl $" << fn.body.expression.value << ", %eax\n";
+  out << "    ret\n";
+  // Tells the linker this object does not need an executable stack.
+  out << "    .section .note.GNU-stack,\"\",@progbits\n";
 
-            return out.str();
-    }
-};
-        
+  return out.str();
+}

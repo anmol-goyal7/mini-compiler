@@ -1,16 +1,21 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -Isrc
+CXXFLAGS = -std=c++17 -Wall -Wextra -Wpedantic -Isrc
 
-mycc: src/main.cpp src/lexer.cpp src/parser.cpp src/codegen.cpp src/token.h src/ast.h
-	$(CXX) $(CXXFLAGS) src/main.cpp -o mycc
+SRCS = src/main.cpp src/lexer.cpp src/parser.cpp src/codegen.cpp
+OBJS = $(SRCS:.cpp=.o)
 
-# compile a .c test file all the way to an executable
+mycc: $(OBJS)
+	$(CXX) $(CXXFLAGS) $(OBJS) -o $@
+
+src/%.o: src/%.cpp src/*.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# compile every program under tests/ and check its exit code or error
 test: mycc
-	./mycc tests/test.c > tests/test.s
-	$(CXX) tests/test.s -o tests/test_bin
-	./tests/test_bin; echo "exit code: $$?"
+	./tests/run.sh
 
 clean:
-	rm -f mycc tests/test.s tests/test_bin
+	rm -f mycc $(OBJS)
+	rm -rf tests/out
 
 .PHONY: test clean

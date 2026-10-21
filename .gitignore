@@ -1,5 +1,4 @@
 mycc
-tests/test_bin
-tests/test.s
 *.o
-
+tests/out/
+compile_commands.json

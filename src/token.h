@@ -2,7 +2,7 @@
 #include <string>
 
 enum class TokenType {
-  INT, 
+  INT,
   RETURN,
   IDENTIFIER,
   NUMBER,
@@ -19,4 +19,6 @@ enum class TokenType {
 struct Token {
   TokenType type;
   std::string lexeme;
+  int line = 1;
+  int column = 1;
 };
